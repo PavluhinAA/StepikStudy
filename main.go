@@ -3,16 +3,14 @@ package main
 import "fmt"
 
 func main() {
-	var (
-		a int
-	)
-	_, _ = fmt.Scan(&a)
+	var a float64
+	fmt.Scan(&a)
 	switch {
-	case a == 0:
-		fmt.Println("ноль")
-	case a < 0:
-		fmt.Println("Число отрицательное")
-	case a > 0:
-		fmt.Println("Чосло положительное")
+	case a <= 0:
+		fmt.Printf("число %2.2f не подходит", a)
+	case a*a > 10000:
+		fmt.Printf("%e", a)
+	default:
+		fmt.Printf("%.4f", a*a)
 	}
 }
