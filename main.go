@@ -2,25 +2,46 @@ package main
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
+	"os"
 )
 
 func main() {
-	var a int
-	fmt.Scan(&a)
-	fmt.Println(recursTest(a))
+	value1, value2, operation := readTask()
+	if v, ok := value1.(float64); ok {
+		if v2, ok2 := value2.(float64); ok2 {
+			if str, ok3 := operation.(string); ok3 {
+				switch str {
+				case "+":
+					fmt.Printf("%.4f", v2+v)
+					os.Exit(0)
+				case "-":
+					fmt.Printf("%.4f", -v2+v)
+					os.Exit(0)
+				case "*":
+					fmt.Printf("%.4f", v2*v)
+					os.Exit(0)
+				case "/":
+					fmt.Printf("%.4f", v/v2)
+					os.Exit(0)
+				default:
+					fmt.Println("неизвестная операция")
+					os.Exit(0)
+				}
+			}
+			fmt.Println("неизвестная операция")
+			os.Exit(0)
+		}
+		fmt.Printf("value=%v: %T\n", value2, value2)
+		os.Exit(0)
+	}
+	fmt.Printf("value=%v: %T\n", value1, value1)
+	os.Exit(0)
 }
-func recursTest(a int) int { //Чистый тест, никакого практического применения не имеет
-	if a < 10 {
-		return a
-	}
-	str := strconv.Itoa(a)
-	arr := strings.Split(str, "")
-	a = 0
-	for i := 0; i < len(arr); i++ {
-		b, _ := strconv.Atoi(arr[i])
-		a += b
-	}
-	return recursTest(a)
+func readTask() (interface{}, interface{}, interface{}) {
+	var (
+		a = 5.6
+		b = 3.2
+		c = 3
+	)
+	return a, b, c
 }
