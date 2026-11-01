@@ -5,56 +5,41 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
 )
 
-type Student struct{ Rating []int }
-type Group struct{ Students []Student }
-type Result struct{ Average float64 }
+type Items struct {
+	GlobalID int64 `json:"global_id"`
+}
 
 func main() {
-	var (
-		data   Group
-		numRat int
-	)
-	/*file, err := os.Open("input.json")
+	file, err := os.Open("data.json")
 	if err != nil {
 		log.Fatal(err)
 	}
-	input, err := io.ReadAll(file)*/
-	input, err := io.ReadAll(os.Stdin)
+	defer func() {
+		if ferr := file.Close(); ferr != nil {
+			log.Println(ferr)
+		}
+	}()
 
+	input, err := io.ReadAll(file)
 	if err != nil {
-		log.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
-
+	var data []Items
 	err = json.Unmarshal(input, &data)
 	if err != nil {
-		log.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
-	for _, student := range data.Students {
-		numRat += len(student.Rating)
-	}
-	numStd := len(data.Students)
-
-	if numStd == 0 {
-		log.Println("No students found")
-		os.Exit(1)
+	var sum int64
+	for _, item := range data {
+		sum += item.GlobalID
 	}
 
-	out, err := json.MarshalIndent(Result{Average: float64(numRat) / float64(numStd)}, "", "    ")
-
+	_, err = os.Stdout.WriteString(strconv.FormatInt(sum, 10) + "\n")
 	if err != nil {
-		log.Println(err)
-		os.Exit(1)
-	}
-
-	_, err = os.Stdout.Write(out)
-
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }
