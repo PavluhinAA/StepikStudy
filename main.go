@@ -1,44 +1,32 @@
 package main
 
 import (
-	"encoding/json"
 	"io"
 	"log"
 	"os"
-	"strconv"
+	"strings"
+	"time"
 )
 
-type Items struct {
-	GlobalID int64 `json:"global_id"`
-}
+const layout = "2006-01-02 15:04:05"
 
 func main() {
-	file, err := os.Open("data.json")
+	input, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func() {
-		if ferr := file.Close(); ferr != nil {
-			log.Println(ferr)
-		}
-	}()
+	tStr := strings.TrimSpace(string(input))
 
-	input, err := io.ReadAll(file)
-	if err != nil {
-		log.Fatal(err)
-	}
-	var data []Items
-	err = json.Unmarshal(input, &data)
+	t, err := time.Parse(layout, tStr)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var sum int64
-	for _, item := range data {
-		sum += item.GlobalID
+	if t.Hour() > 13 {
+		t = t.Add(time.Hour * 24)
 	}
 
-	_, err = os.Stdout.WriteString(strconv.FormatInt(sum, 10) + "\n")
+	_, err = os.Stdout.WriteString(t.Format(layout) + "\n")
 	if err != nil {
 		log.Fatal(err)
 	}
