@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -8,26 +9,29 @@ import (
 	"time"
 )
 
-const layout = "2006-01-02 15:04:05"
+const layout = "02.01.2006 15:04:05"
 
 func main() {
 	input, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		log.Fatal(err)
 	}
-	tStr := strings.TrimSpace(string(input))
-
-	t, err := time.Parse(layout, tStr)
+	twoTime := strings.Split(strings.TrimSpace(string(input)), ",")
+	if len(twoTime) != 2 {
+		log.Fatal("invalid input")
+	}
+	t1, err := time.Parse(layout, twoTime[0])
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("t1", err)
 	}
-
-	if t.Hour() > 13 {
-		t = t.Add(time.Hour * 24)
-	}
-
-	_, err = os.Stdout.WriteString(t.Format(layout) + "\n")
+	t2, err := time.Parse(layout, twoTime[1])
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("t2", err)
 	}
+
+	if t2.After(t1) {
+		t1, t2 = t2, t1
+	}
+
+	fmt.Println(t1.Sub(t2))
 }
